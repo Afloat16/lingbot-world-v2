@@ -1,9 +1,13 @@
 import unittest
+from unittest.mock import patch
 
 import torch
 
-from wan.utils.fm_solvers import FlowDPMSolverMultistepScheduler
-from wan.utils.fm_solvers_unipc import FlowUniPCMultistepScheduler
+# Package initialization evaluates the unrelated T5 encoder's CUDA default.
+# Only defer that device query while importing; the schedulers run on CPU.
+with patch('torch.cuda.current_device', return_value=0):
+    from wan.utils.fm_solvers import FlowDPMSolverMultistepScheduler
+    from wan.utils.fm_solvers_unipc import FlowUniPCMultistepScheduler
 
 
 def noise_schedulers():
