@@ -1,10 +1,14 @@
 import unittest
+from unittest.mock import patch
 
 import torch
 
-from wan.modules.model import rope_params
-from wan.modules.model_causal import rope_apply
-from wan.modules.model_fast import causal_rope_apply
+# Import the native package on CPU without querying the unrelated T5
+# encoder's default CUDA device. No attention kernel or RoPE code is patched.
+with patch('torch.cuda.current_device', return_value=0):
+    from wan.modules.model import rope_params
+    from wan.modules.model_causal import rope_apply
+    from wan.modules.model_fast import causal_rope_apply
 
 
 def frequency_table(length, head_dim, theta):
